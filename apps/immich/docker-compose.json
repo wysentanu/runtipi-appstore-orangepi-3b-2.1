@@ -1,0 +1,222 @@
+{
+  "$schema": "https://schemas.runtipi.io/v2/dynamic-compose.json",
+  "schemaVersion": 2,
+  "services": [
+    {
+      "name": "immich",
+      "image": "ghcr.io/immich-app/immich-server:v2.3.1",
+      "isMain": true,
+      "internalPort": 2283,
+      "securityOpt": [
+        "systempaths=unconfined",
+        "apparmor=unconfined"
+      ],
+      "devices": [
+        "/dev/rga:/dev/rga",
+        "/dev/dri:/dev/dri",
+        "/dev/dma_heap:/dev/dma_heap",
+        "/dev/mpp_service:/dev/mpp_service"
+      ],
+      "volumes": [
+        {
+          "hostPath": "${DATA_FOLDER_HOST}/Gallery",
+          "containerPath": "/data/library/admin"
+        },
+        {
+          "hostPath": "${DATA_FOLDER_HOST}/Gallery/immich-encoded-video",
+          "containerPath": "/data/encoded-video"
+        },
+        {
+          "hostPath": "${HOME_FOLDER_HOST}/backups",
+          "containerPath": "/data/backups"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data",
+          "containerPath": "/data"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload",
+          "containerPath": "/data/upload"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload/library",
+          "containerPath": "/data/library"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload/thumbs",
+          "containerPath": "/data/thumbs"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload/profile",
+          "containerPath": "/data/profile"
+        },
+        {
+          "hostPath": "/etc/OpenCL",
+          "containerPath": "/etc/OpenCL:ro"
+        },
+        {
+          "hostPath": "/usr/lib/aarch64-linux-gnu/libmali.so.1",
+          "containerPath": "/usr/lib/aarch64-linux-gnu/libmali.so.1:ro"
+        },
+        {
+          "hostPath": "/etc/localtime",
+          "containerPath": "/etc/localtime:ro"
+        }
+      ],
+      "environment": [
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "DB_HOSTNAME",
+          "value": "immich-db"
+        },
+        {
+          "key": "DB_USERNAME",
+          "value": "tipi"
+        },
+        {
+          "key": "DB_PASSWORD",
+          "value": "${DB_PASSWORD}"
+        },
+        {
+          "key": "ENABLE_MAPBOX",
+          "value": "false"
+        },
+        {
+          "key": "DB_DATABASE_NAME",
+          "value": "immich"
+        },
+        {
+          "key": "REDIS_HOSTNAME",
+          "value": "immich-redis"
+        },
+        {
+          "key": "JWT_SECRET",
+          "value": "${JWT_SECRET}"
+        },
+        {
+          "key": "TZ",
+          "value": "${TZ}"
+        }
+      ],
+      "dependsOn": ["immich-redis", "immich-db"]
+    },
+    {
+      "name": "immich-machine-learning",
+      "image": "ghcr.io/immich-app/immich-machine-learning:v2.3.1-rknn",
+      "securityOpt": [
+        "systempaths=unconfined",
+        "apparmor=unconfined"
+      ],
+      "devices": [
+        "/dev/dri:/dev/dri"
+      ],
+      "volumes": [
+        {
+          "hostPath": "${DATA_FOLDER_HOST}/Gallery",
+          "containerPath": "/data/library/admin"
+        },
+        {
+          "hostPath": "${DATA_FOLDER_HOST}/Gallery/immich-encoded-video",
+          "containerPath": "/data/encoded-video"
+        },
+        {
+          "hostPath": "${HOME_FOLDER_HOST}/backups",
+          "containerPath": "/data/backups"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data",
+          "containerPath": "/data"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload",
+          "containerPath": "/data/upload"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload/library",
+          "containerPath": "/data/library"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload/thumbs",
+          "containerPath": "/data/thumbs"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/upload/profile",
+          "containerPath": "/data/profile"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/immich-ml-cache",
+          "containerPath": "/cache"
+        }
+      ],
+      "environment": [
+        {
+          "key": "MACHINE_LEARNING_RKNN_THREADS",
+          "value": "2"
+        },
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "DB_HOSTNAME",
+          "value": "immich-db"
+        },
+        {
+          "key": "DB_USERNAME",
+          "value": "tipi"
+        },
+        {
+          "key": "DB_PASSWORD",
+          "value": "${DB_PASSWORD}"
+        },
+        {
+          "key": "DB_NAME",
+          "value": "immich"
+        },
+        {
+          "key": "DB_DATABASE_NAME",
+          "value": "immich"
+        }
+      ],
+      "dependsOn": ["immich-db"]
+    },
+    {
+      "name": "immich-redis",
+      "image": "redis:6.2",
+      "healthCheck": {
+        "test": "redis-cli ping || exit 1"
+      }
+    },
+    {
+      "name": "immich-db",
+      "image": "ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0",
+      "volumes": [
+        {
+          "hostPath": "${APP_DATA_DIR}/data/db",
+          "containerPath": "/var/lib/postgresql/data"
+        }
+      ],
+      "environment": [
+        {
+          "key": "POSTGRES_PASSWORD",
+          "value": "${DB_PASSWORD}"
+        },
+        {
+          "key": "POSTGRES_USER",
+          "value": "tipi"
+        },
+        {
+          "key": "POSTGRES_DB",
+          "value": "immich"
+        },
+        {
+          "key": "PG_DATA",
+          "value": "/var/lib/postgresql/data"
+        }
+      ]
+    }
+  ]
+}

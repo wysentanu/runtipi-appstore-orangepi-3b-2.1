@@ -1,0 +1,6 @@
+# Copy paste this file into User Config page in runtipi
+
+services:
+  immich:
+    group_add:
+      - video
