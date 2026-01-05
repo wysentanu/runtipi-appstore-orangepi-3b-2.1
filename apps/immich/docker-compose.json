@@ -4,7 +4,7 @@
   "services": [
     {
       "name": "immich",
-      "image": "ghcr.io/immich-app/immich-server:v2.3.1",
+      "image": "ghcr.io/immich-app/immich-server:v2.4.1",
       "isMain": true,
       "internalPort": 2283,
       "securityOpt": [
@@ -19,36 +19,24 @@
       ],
       "volumes": [
         {
-          "hostPath": "${DATA_FOLDER_HOST}/Gallery",
-          "containerPath": "/data/library/admin"
-        },
-        {
-          "hostPath": "${DATA_FOLDER_HOST}/Gallery/immich-encoded-video",
-          "containerPath": "/data/encoded-video"
-        },
-        {
-          "hostPath": "${HOME_FOLDER_HOST}/backups",
-          "containerPath": "/data/backups"
-        },
-        {
-          "hostPath": "${APP_DATA_DIR}/data",
+          "hostPath": "${DATA_LOCATION}",
           "containerPath": "/data"
         },
         {
-          "hostPath": "${APP_DATA_DIR}/data/upload",
-          "containerPath": "/data/upload"
-        },
-        {
-          "hostPath": "${APP_DATA_DIR}/data/upload/library",
+          "hostPath": "${LIBRARY_LOCATION}",
           "containerPath": "/data/library"
         },
         {
-          "hostPath": "${APP_DATA_DIR}/data/upload/thumbs",
-          "containerPath": "/data/thumbs"
+          "hostPath": "${ADMIN_LIBRARY_LOCATION}",
+          "containerPath": "/data/library/admin"
         },
         {
-          "hostPath": "${APP_DATA_DIR}/data/upload/profile",
-          "containerPath": "/data/profile"
+          "hostPath": "${ENCODED_VIDEO_LOCATION}",
+          "containerPath": "/data/encoded-video"
+        },
+        {
+          "hostPath": "${BACKUP_LOCATION}",
+          "containerPath": "/data/backups"
         },
         {
           "hostPath": "/etc/OpenCL",
@@ -99,13 +87,33 @@
         {
           "key": "TZ",
           "value": "${TZ}"
+        },
+        {
+          "key": "DATA_LOCATION",
+          "value": "${DATA_LOCATION}"
+        },
+        {
+          "key": "LIBRARY_LOCATION",
+          "value": "${LIBRARY_LOCATION}"
+        },
+        {
+          "key": "ADMIN_LIBRARY_LOCATION",
+          "value": "${ADMIN_LIBRARY_LOCATION}"
+        },
+        {
+          "key": "ENCODED_VIDEO_LOCATION",
+          "value": "${ENCODED_VIDEO_LOCATION}"
+        },
+        {
+          "key": "BACKUP_LOCATION",
+          "value": "${BACKUP_LOCATION}"
         }
       ],
       "dependsOn": ["immich-redis", "immich-db"]
     },
     {
       "name": "immich-machine-learning",
-      "image": "ghcr.io/immich-app/immich-machine-learning:v2.3.1-rknn",
+      "image": "ghcr.io/immich-app/immich-machine-learning:v2.4.1-rknn",
       "securityOpt": [
         "systempaths=unconfined",
         "apparmor=unconfined"
@@ -115,39 +123,23 @@
       ],
       "volumes": [
         {
-          "hostPath": "${DATA_FOLDER_HOST}/Gallery",
-          "containerPath": "/data/library/admin"
-        },
-        {
-          "hostPath": "${DATA_FOLDER_HOST}/Gallery/immich-encoded-video",
-          "containerPath": "/data/encoded-video"
-        },
-        {
-          "hostPath": "${HOME_FOLDER_HOST}/backups",
-          "containerPath": "/data/backups"
-        },
-        {
-          "hostPath": "${APP_DATA_DIR}/data",
+          "hostPath": "${DATA_LOCATION}",
           "containerPath": "/data"
         },
         {
-          "hostPath": "${APP_DATA_DIR}/data/upload",
-          "containerPath": "/data/upload"
-        },
-        {
-          "hostPath": "${APP_DATA_DIR}/data/upload/library",
+          "hostPath": "${LIBRARY_LOCATION}",
           "containerPath": "/data/library"
         },
         {
-          "hostPath": "${APP_DATA_DIR}/data/upload/thumbs",
-          "containerPath": "/data/thumbs"
+          "hostPath": "${ADMIN_LIBRARY_LOCATION}",
+          "containerPath": "/data/library/admin"
         },
         {
-          "hostPath": "${APP_DATA_DIR}/data/upload/profile",
-          "containerPath": "/data/profile"
+          "hostPath": "${ENCODED_VIDEO_LOCATION}",
+          "containerPath": "/data/encoded-video"
         },
         {
-          "hostPath": "${APP_DATA_DIR}/data/immich-ml-cache",
+          "hostPath": "${IMMICH_ML_CACHE_LOCATION}",
           "containerPath": "/cache"
         }
       ],
@@ -179,20 +171,50 @@
         {
           "key": "DB_DATABASE_NAME",
           "value": "immich"
+        },
+        {
+          "key": "DATA_LOCATION",
+          "value": "${DATA_LOCATION}"
+        },
+        {
+          "key": "LIBRARY_LOCATION",
+          "value": "${LIBRARY_LOCATION}"
+        },
+        {
+          "key": "ADMIN_LIBRARY_LOCATION",
+          "value": "${ADMIN_LIBRARY_LOCATION}"
+        },
+        {
+          "key": "ENCODED_VIDEO_LOCATION",
+          "value": "${ENCODED_VIDEO_LOCATION}"
+        },
+        {
+          "key": "BACKUP_LOCATION",
+          "value": "${BACKUP_LOCATION}"
+        },
+        {
+          "key": "IMMICH_ML_CACHE_LOCATION",
+          "value": "${IMMICH_ML_CACHE_LOCATION}"
         }
       ],
       "dependsOn": ["immich-db"]
     },
     {
       "name": "immich-redis",
-      "image": "redis:6.2",
+      "image": "docker.io/valkey/valkey:9",
       "healthCheck": {
         "test": "redis-cli ping || exit 1"
-      }
+      },
+      "volumes": [
+        {
+          "hostPath": "${APP_DATA_DIR}/data/redis",
+          "containerPath": "/data"
+        }
+      ]
     },
     {
       "name": "immich-db",
-      "image": "ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0",
+      "image": "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0",
       "volumes": [
         {
           "hostPath": "${APP_DATA_DIR}/data/db",

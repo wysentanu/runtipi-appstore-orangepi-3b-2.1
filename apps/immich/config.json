@@ -2,8 +2,8 @@
   "$schema": "https://schemas.runtipi.io/v2/app-info.json",
   "name": "Immich",
   "id": "immich",
-  "version": "v2.3.1",
-  "tipi_version": 1,
+  "version": "v2.4.1",
+  "tipi_version": 2,
   "available": true,
   "exposable": true,
   "dynamic_config": true,
@@ -46,6 +46,60 @@
       "placeholder": "Asia/Makassar",
       "default": "Asia/Makassar",
       "env_variable": "TZ"
+    },
+    {
+      "type": "text",
+      "label": "DATA_LOCATION",
+      "required": false,
+      "hint": "Immich main data location",
+      "placeholder": "${DATA_FOLDER_HOST}/AppData/immich",
+      "default": "${DATA_FOLDER_HOST}/AppData/immich",
+      "env_variable": "DATA_LOCATION"
+    },
+    {
+      "type": "text",
+      "label": "LIBRARY_LOCATION",
+      "required": false,
+      "hint": "Immich base library location",
+      "placeholder": "${DATA_FOLDER_HOST}/Gallery/ImmichLibrary",
+      "default": "${DATA_FOLDER_HOST}/Gallery/ImmichLibrary",
+      "env_variable": "LIBRARY_LOCATION"
+    },
+    {
+      "type": "text",
+      "label": "ADMIN_LIBRARY_LOCATION",
+      "required": false,
+      "hint": "Immich admin library location (primary account)",
+      "placeholder": "${DATA_FOLDER_HOST}/Gallery",
+      "default": "${DATA_FOLDER_HOST}/Gallery",
+      "env_variable": "ADMIN_LIBRARY_LOCATION"
+    },
+    {
+      "type": "text",
+      "label": "ENCODED_VIDEO_LOCATION",
+      "required": false,
+      "hint": "Immich encoded video location",
+      "placeholder": "${DATA_FOLDER_HOST}/Gallery/immich-encoded-video",
+      "default": "${DATA_FOLDER_HOST}/Gallery/immich-encoded-video",
+      "env_variable": "ENCODED_VIDEO_LOCATION"
+    },
+    {
+      "type": "text",
+      "label": "BACKUP_LOCATION",
+      "required": false,
+      "hint": "Immich backup files location",
+      "placeholder": "${HOME_FOLDER_HOST}/backups",
+      "default": "${HOME_FOLDER_HOST}/backups",
+      "env_variable": "BACKUP_LOCATION"
+    },
+    {
+      "type": "text",
+      "label": "IMMICH_ML_CACHE_LOCATION",
+      "required": false,
+      "hint": "Immich Machine Learning Cache location",
+      "placeholder": "${APP_DATA_DIR}/data/immich-ml-cache",
+      "default": "${APP_DATA_DIR}/data/immich-ml-cache",
+      "env_variable": "IMMICH_ML_CACHE_LOCATION"
     }
   ]
 }
