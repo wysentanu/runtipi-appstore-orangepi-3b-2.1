@@ -2,8 +2,8 @@
   "$schema": "https://schemas.runtipi.io/v2/app-info.json",
   "name": "Immich",
   "id": "immich",
-  "version": "v2.4.1",
-  "tipi_version": 2,
+  "version": "v2.5.0",
+  "tipi_version": 3,
   "available": true,
   "exposable": true,
   "dynamic_config": true,
@@ -17,7 +17,7 @@
   "website": "https://www.immich.app/",
   "supported_architectures": ["arm64", "amd64"],
   "created_at": 1765615557133,
-  "updated_at": 1765615557133,
+  "updated_at": 1769566304139,
   "min_tipi_version": "4.5.0",
   "form_fields": [
     {
