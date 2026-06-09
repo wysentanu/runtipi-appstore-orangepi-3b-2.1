@@ -1,0 +1,222 @@
+{
+  "$schema": "https://schemas.runtipi.io/v2/dynamic-compose.json",
+  "schemaVersion": 2,
+  "services": [
+    {
+      "name": "fleet",
+      "image": "fleetdm/fleet:v4.86.1",
+      "isMain": true,
+      "internalPort": 1337,
+      "command": [
+        "sh",
+        "-c",
+        "/usr/bin/fleet prepare db --no-prompt && /usr/bin/fleet serve"
+      ],
+      "environment": [
+        {
+          "key": "FLEET_REDIS_ADDRESS",
+          "value": "fleet-redis:6379"
+        },
+        {
+          "key": "FLEET_MYSQL_ADDRESS",
+          "value": "fleet-mysql:3306"
+        },
+        {
+          "key": "FLEET_MYSQL_DATABASE",
+          "value": "fleet"
+        },
+        {
+          "key": "FLEET_MYSQL_USERNAME",
+          "value": "fleet"
+        },
+        {
+          "key": "FLEET_MYSQL_PASSWORD",
+          "value": "${MYSQL_PASSWORD}"
+        },
+        {
+          "key": "FLEET_SERVER_ADDRESS",
+          "value": "0.0.0.0:1337"
+        },
+        {
+          "key": "FLEET_SERVER_TLS",
+          "value": "false"
+        },
+        {
+          "key": "FLEET_SERVER_PRIVATE_KEY",
+          "value": "${FLEET_SERVER_PRIVATE_KEY}"
+        },
+        {
+          "key": "FLEET_LICENSE_KEY",
+          "value": "${FLEET_LICENSE_KEY}"
+        },
+        {
+          "key": "FLEET_SESSION_DURATION",
+          "value": "${FLEET_SESSION_DURATION}"
+        },
+        {
+          "key": "FLEET_LOGGING_JSON",
+          "value": "${FLEET_LOGGING_JSON}"
+        },
+        {
+          "key": "FLEET_OSQUERY_STATUS_LOG_PLUGIN",
+          "value": "filesystem"
+        },
+        {
+          "key": "FLEET_FILESYSTEM_STATUS_LOG_FILE",
+          "value": "/logs/osqueryd.status.log"
+        },
+        {
+          "key": "FLEET_FILESYSTEM_RESULT_LOG_FILE",
+          "value": "/logs/osqueryd.results.log"
+        },
+        {
+          "key": "FLEET_OSQUERY_LABEL_UPDATE_INTERVAL",
+          "value": "${FLEET_OSQUERY_LABEL_UPDATE_INTERVAL}"
+        },
+        {
+          "key": "FLEET_VULNERABILITIES_CURRENT_INSTANCE_CHECKS",
+          "value": "yes"
+        },
+        {
+          "key": "FLEET_VULNERABILITIES_DATABASES_PATH",
+          "value": "/vulndb"
+        },
+        {
+          "key": "FLEET_VULNERABILITIES_PERIODICITY",
+          "value": "${FLEET_VULNERABILITIES_PERIODICITY}"
+        },
+        {
+          "key": "FLEET_S3_SOFTWARE_INSTALLERS_BUCKET",
+          "value": "${FLEET_S3_SOFTWARE_INSTALLERS_BUCKET}"
+        },
+        {
+          "key": "FLEET_S3_SOFTWARE_INSTALLERS_ACCESS_KEY_ID",
+          "value": "${FLEET_S3_SOFTWARE_INSTALLERS_ACCESS_KEY_ID}"
+        },
+        {
+          "key": "FLEET_S3_SOFTWARE_INSTALLERS_SECRET_ACCESS_KEY",
+          "value": "${FLEET_S3_SOFTWARE_INSTALLERS_SECRET_ACCESS_KEY}"
+        },
+        {
+          "key": "FLEET_S3_SOFTWARE_INSTALLERS_FORCE_S3_PATH_STYLE",
+          "value": "${FLEET_S3_SOFTWARE_INSTALLERS_FORCE_S3_PATH_STYLE}"
+        },
+        {
+          "key": "FLEET_S3_SOFTWARE_INSTALLERS_ENDPOINT_URL",
+          "value": "${FLEET_S3_SOFTWARE_INSTALLERS_ENDPOINT_URL}"
+        },
+        {
+          "key": "FLEET_S3_SOFTWARE_INSTALLERS_REGION",
+          "value": "${FLEET_S3_SOFTWARE_INSTALLERS_REGION}"
+        }
+      ],
+      "volumes": [
+        {
+          "hostPath": "${APP_DATA_DIR}/data/fleet",
+          "containerPath": "/fleet"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/logs",
+          "containerPath": "/logs"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/vulndb",
+          "containerPath": "/vulndb"
+        }
+      ],
+      "healthCheck": {
+        "test": "wget -qO- http://127.0.0.1:1337/healthz",
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 12
+      },
+      "dependsOn": {
+        "fleet-mysql": {
+          "condition": "service_healthy"
+        },
+        "fleet-redis": {
+          "condition": "service_healthy"
+        },
+        "fleet-init": {
+          "condition": "service_completed_successfully"
+        }
+      },
+      "addToMainNetwork": true
+    },
+    {
+      "name": "fleet-mysql",
+      "image": "mysql:8",
+      "environment": [
+        {
+          "key": "MYSQL_ROOT_PASSWORD",
+          "value": "${MYSQL_ROOT_PASSWORD}"
+        },
+        {
+          "key": "MYSQL_DATABASE",
+          "value": "fleet"
+        },
+        {
+          "key": "MYSQL_USER",
+          "value": "fleet"
+        },
+        {
+          "key": "MYSQL_PASSWORD",
+          "value": "${MYSQL_PASSWORD}"
+        }
+      ],
+      "volumes": [
+        {
+          "hostPath": "${APP_DATA_DIR}/data/mysql",
+          "containerPath": "/var/lib/mysql"
+        }
+      ],
+      "healthCheck": {
+        "test": "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent || exit 1",
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 12
+      },
+      "capAdd": ["SYS_NICE"]
+    },
+    {
+      "name": "fleet-redis",
+      "image": "redis:6",
+      "command": ["redis-server", "--appendonly", "yes"],
+      "volumes": [
+        {
+          "hostPath": "${APP_DATA_DIR}/data/redis",
+          "containerPath": "/data"
+        }
+      ],
+      "healthCheck": {
+        "test": "redis-cli ping",
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 12
+      }
+    },
+    {
+      "name": "fleet-init",
+      "image": "alpine:latest",
+      "command": [
+        "sh",
+        "-c",
+        "chown -R 100:101 /logs /data /vulndb"
+      ],
+      "volumes": [
+        {
+          "hostPath": "${APP_DATA_DIR}/data/logs",
+          "containerPath": "/logs"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/fleet",
+          "containerPath": "/data"
+        },
+        {
+          "hostPath": "${APP_DATA_DIR}/data/vulndb",
+          "containerPath": "/vulndb"
+        }
+      ]
+    }
+  ]
+}

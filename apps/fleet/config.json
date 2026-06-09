@@ -1,0 +1,136 @@
+{
+  "$schema": "https://schemas.runtipi.io/v2/app-info.json",
+  "name": "Fleet",
+  "id": "fleet",
+  "version": "v4.86.1",
+  "tipi_version": 1,
+  "available": true,
+  "exposable": true,
+  "dynamic_config": true,
+  "https": false,
+  "port": 1337,
+  "short_desc": "Open-source device management for every OS.",
+  "description": "Fleet is an open-source endpoint management platform for osquery, MDM, software, patching, scripts, and vulnerability workflows.",
+  "author": "Fleet Device Management Inc.",
+  "categories": ["security", "network", "utilities"],
+  "source": "https://github.com/fleetdm/fleet",
+  "website": "https://fleetdm.com",
+  "supported_architectures": ["amd64"],
+  "created_at": 1780993481914,
+  "updated_at": 1780993481914,
+  "min_tipi_version": "4.5.0",
+  "form_fields": [
+    {
+      "type": "random",
+      "label": "MySQL Root Password",
+      "min": 32,
+      "env_variable": "MYSQL_ROOT_PASSWORD"
+    },
+    {
+      "type": "random",
+      "label": "Fleet Database Password",
+      "min": 32,
+      "env_variable": "MYSQL_PASSWORD"
+    },
+    {
+      "type": "random",
+      "label": "Fleet Server Private Key",
+      "min": 32,
+      "encoding": "base64",
+      "env_variable": "FLEET_SERVER_PRIVATE_KEY"
+    },
+    {
+      "type": "text",
+      "label": "Fleet License Key",
+      "required": false,
+      "hint": "Optional Fleet Premium license key. Leave blank for Fleet Free.",
+      "placeholder": "",
+      "default": "",
+      "env_variable": "FLEET_LICENSE_KEY"
+    },
+    {
+      "type": "text",
+      "label": "Session Duration",
+      "required": true,
+      "hint": "Fleet session duration.",
+      "placeholder": "24h",
+      "default": "24h",
+      "env_variable": "FLEET_SESSION_DURATION"
+    },
+    {
+      "type": "boolean",
+      "label": "JSON Logging",
+      "required": false,
+      "default": true,
+      "env_variable": "FLEET_LOGGING_JSON"
+    },
+    {
+      "type": "text",
+      "label": "Label Update Interval",
+      "required": true,
+      "hint": "How often Fleet updates host labels.",
+      "placeholder": "1h",
+      "default": "1h",
+      "env_variable": "FLEET_OSQUERY_LABEL_UPDATE_INTERVAL"
+    },
+    {
+      "type": "text",
+      "label": "Vulnerability Check Periodicity",
+      "required": true,
+      "hint": "How often Fleet runs vulnerability checks.",
+      "placeholder": "1h",
+      "default": "1h",
+      "env_variable": "FLEET_VULNERABILITIES_PERIODICITY"
+    },
+    {
+      "type": "text",
+      "label": "S3 Installers Bucket",
+      "required": false,
+      "hint": "Optional S3-compatible bucket for Fleet software installers.",
+      "placeholder": "",
+      "default": "",
+      "env_variable": "FLEET_S3_SOFTWARE_INSTALLERS_BUCKET"
+    },
+    {
+      "type": "text",
+      "label": "S3 Access Key ID",
+      "required": false,
+      "placeholder": "",
+      "default": "",
+      "env_variable": "FLEET_S3_SOFTWARE_INSTALLERS_ACCESS_KEY_ID"
+    },
+    {
+      "type": "password",
+      "label": "S3 Secret Access Key",
+      "required": false,
+      "placeholder": "",
+      "default": "",
+      "env_variable": "FLEET_S3_SOFTWARE_INSTALLERS_SECRET_ACCESS_KEY"
+    },
+    {
+      "type": "boolean",
+      "label": "S3 Force Path Style",
+      "required": false,
+      "default": false,
+      "env_variable": "FLEET_S3_SOFTWARE_INSTALLERS_FORCE_S3_PATH_STYLE"
+    },
+    {
+      "type": "text",
+      "label": "S3 Endpoint URL",
+      "required": false,
+      "hint": "Optional endpoint for RustFS, MinIO, LocalStack, or another S3-compatible service.",
+      "placeholder": "http://minio:9000",
+      "default": "",
+      "env_variable": "FLEET_S3_SOFTWARE_INSTALLERS_ENDPOINT_URL"
+    },
+    {
+      "type": "text",
+      "label": "S3 Region",
+      "required": false,
+      "hint": "For RustFS or LocalStack, use any non-empty value such as localhost.",
+      "placeholder": "us-east-1",
+      "default": "",
+      "env_variable": "FLEET_S3_SOFTWARE_INSTALLERS_REGION"
+    }
+  ]
+}
