@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schemas.runtipi.io/v2/app-info.json",
+  "name": "Plane Community Edition",
+  "id": "plane",
+  "version": "v1.4.2-x-2",
+  "tipi_version": 2,
+  "available": true,
+  "exposable": true,
+  "dynamic_config": true,
+  "https": false,
+  "port": 8085,
+  "short_desc": "Open-source project management for teams.",
+  "description": "Plane Community Edition is an open-source project management platform for issues, cycles, modules, pages, and project roadmaps.",
+  "author": "Plane",
+  "categories": ["utilities", "development"],
+  "source": "https://github.com/makeplane/plane",
+  "website": "https://plane.so",
+  "supported_architectures": ["arm64", "amd64"],
+  "created_at": 1787285181461,
+  "updated_at": 1788087055401,
+  "min_tipi_version": "4.5.0",
+  "form_fields": [
+    {
+      "type": "random",
+      "label": "PostgreSQL Password",
+      "min": 32,
+      "encoding": "hex",
+      "env_variable": "POSTGRES_PASSWORD"
+    },
+    {
+      "type": "random",
+      "label": "RabbitMQ Password",
+      "min": 32,
+      "encoding": "hex",
+      "env_variable": "RABBITMQ_PASSWORD"
+    },
+    {
+      "type": "random",
+      "label": "Object Storage Secret",
+      "min": 32,
+      "encoding": "hex",
+      "env_variable": "AWS_SECRET_ACCESS_KEY"
+    },
+    {
+      "type": "random",
+      "label": "Plane Secret Key",
+      "min": 50,
+      "encoding": "hex",
+      "env_variable": "SECRET_KEY"
+    },
+    {
+      "type": "random",
+      "label": "Live Server Secret Key",
+      "min": 32,
+      "encoding": "hex",
+      "env_variable": "LIVE_SERVER_SECRET_KEY"
+    },
+    {
+      "type": "text",
+      "label": "Plane Domain",
+      "required": true,
+      "default": "board.cdb.my.id",
+      "env_variable": "APP_DOMAIN"
+    }
+  ]
+}

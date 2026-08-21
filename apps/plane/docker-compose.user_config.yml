@@ -1,0 +1,11 @@
+# Copy paste this file into the Plane User Config page in Runtipi.
+# Persistent Plane data is defined in docker-compose.json; this override only
+# keeps the one-shot migration job from restarting after it exits.
+
+services:
+  migrator:
+    restart: "no"
+    labels:
+      runtipi.managed: "false"
+    volumes:
+      - ${DATA_FOLDER_HOST}/AppData/plane/logs-migrator:/code/plane/logs
