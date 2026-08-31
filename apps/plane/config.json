@@ -60,7 +60,7 @@
       "label": "Plane Domain",
       "required": true,
       "default": "board.cdb.my.id",
-      "env_variable": "APP_DOMAIN"
+      "env_variable": "PLANE_DOMAIN"
     }
   ]
 }
